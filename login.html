@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چوونە ژوورەوە - HBE Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; font-family: 'Tahoma', 'Noto Sans Arabic', sans-serif; }
+        body { margin: 0; background-color: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; color: #000; }
+        
+        /* Header نوێ بە ڕەنگی ڕەش */
+        header { 
+            background: #fff; 
+            padding: 15px; 
+            border-bottom: 3px solid #000; 
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo { font-size: 1.8rem; font-weight: 900; color: #000; text-decoration: none; }
+        
+        /* چوارچێوەی لۆگین */
+        .login-container { max-width: 400px; margin: auto; padding: 25px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 90%; }
+        h2 { text-align: center; margin-bottom: 25px; color: #000; font-weight: 800; }
+        
+        /* ستایلی خانەکان */
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: bold; color: #333; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #000; border-radius: 8px; outline: none; font-size: 1rem; background: #fdfdfd; }
+        .input-group input:focus { border-color: #444; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        
+        /* دوگمەی چوونە ژوورەوە - ڕەش */
+        .btn-login { width: 100%; background: #000; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-login:active { transform: scale(0.98); background: #333; }
+        
+        /* لینکەکانی خوارەوە */
+        .footer-links { text-align: center; margin-top: 20px; font-size: 0.85rem; color: #000; }
+        .footer-links a { color: #000; text-decoration: underline; font-weight: bold; }
+        
+        /* پەیامی هەڵە */
+        #errorMessage { color: red; text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="logo">HBE Store</a>
+</header>
+
+<div class="login-container">
+    <h2>چوونە ژوورەوە</h2>
+    <form id="loginForm">
+        <div class="input-group">
+            <label>ئیمەیڵ</label>
+            <input type="email" id="email" placeholder="ئیمەیڵەکەت بنووسە..." required>
+        </div>
+        <div class="input-group">
+            <label>وشەی تێپەڕ (پاسۆرد)</label>
+            <input type="password" id="password" placeholder="******" required>
+        </div>
+        <button type="submit" class="btn-login">چوونە ژوورەوە</button>
+    </form>
+    
+    <p id="errorMessage"></p>
+    
+    <div class="footer-links">
+        هەژمارت نییە؟ <a href="register.html">دروستکردنی هەژمار</a>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAaMyM_7vR7UxkouUPcCEPFvuMz9J1uTPs",
+        authDomain: "hbe-store.firebaseapp.com",
+        projectId: "hbe-store",
+        storageBucket: "hbe-store.firebasestorage.app",
+        messagingSenderId: "9693280691",
+        appId: "1:9693280691:web:46a54a03385d83423fb3c6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.innerText = "";
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = "index.html"; 
+        } catch (error) {
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                errorMessage.innerText = "ئیمەیڵ یان وشەی نهێنی هەڵەیە.";
+            } else {
+                errorMessage.innerText = "کێشەیەک ڕوویدا، تکایە دووبارە هەوڵ بدەرەوە.";
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

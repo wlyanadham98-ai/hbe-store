@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خۆتۆمارکردن - HBE Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; font-family: 'Tahoma', 'Noto Sans Arabic', sans-serif; }
+        body { margin: 0; background-color: #f0f2f5; color: #000; padding-bottom: 20px; }
+        
+        /* Header نوێ بە ڕەنگی ڕەش */
+        header { 
+            background: #fff; 
+            padding: 15px; 
+            border-bottom: 3px solid #000; 
+            text-align: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        }
+        .logo { font-size: 1.8rem; font-weight: 900; color: #000; text-decoration: none; }
+        
+        /* چوارچێوەی فۆڕمەکە */
+        .container { max-width: 400px; margin: 30px auto; padding: 25px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 90%; }
+        h2 { text-align: center; color: #000; margin-top: 0; margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; }
+        
+        /* ستایلی خانەکان */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: bold; color: #333; }
+        .input-group input, .input-group select { 
+            width: 100%; padding: 12px; border: 1px solid #000; border-radius: 8px; 
+            font-size: 0.95rem; outline: none; transition: 0.3s; background: #fdfdfd;
+        }
+        .input-group input:focus, .input-group select:focus { border-color: #444; box-shadow: 0 0 5px rgba(0,0,0,0.1); background: #fff; }
+        
+        /* دوگمەی دروستکردن - ڕەش */
+        .btn-submit { 
+            width: 100%; background: #000; color: white; padding: 14px; 
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; 
+            cursor: pointer; margin-top: 10px; transition: 0.3s; 
+        }
+        .btn-submit:active { transform: scale(0.98); background: #333; }
+        .btn-submit:disabled { background: #666; cursor: not-allowed; }
+        
+        /* لینکی گەڕانەوە بۆ لۆگین */
+        .login-link { text-align: center; margin-top: 20px; font-size: 0.85rem; color: #000; }
+        .login-link a { color: #000; text-decoration: underline; font-weight: bold; }
+        
+        /* پەیامی هەڵە */
+        #errorMessage { color: red; text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="logo">HBE Store</a>
+</header>
+
+<div class="container">
+    <h2>بەخێربێیت بۆ HBE Store</h2>
+    <p style="text-align: center; font-size: 0.8rem; color: #555; margin-top: -10px; margin-bottom: 20px;">زانیارییەکانت پڕبکەرەوە بۆ ئاسانکاری لە کڕین</p>
+    
+    <form id="registerForm">
+        <div class="input-group">
+            <label>ناوی سیانی</label>
+            <input type="text" id="fullName" placeholder="ناوی تەواوت بنووسە" required>
+        </div>
+        
+        <div class="input-group">
+            <label>ئیمەیڵ</label>
+            <input type="email" id="email" placeholder="ئیمەیڵەکەت بنووسە" required>
+        </div>
+        
+        <div class="input-group">
+            <label>پارێزگا</label>
+            <select id="province" required>
+                <option value="">پارێزگاکەت هەڵبژێرە...</option>
+                <option value="sulaymaniyah">سلێمانی</option>
+                <option value="erbil">هەولێر</option>
+                <option value="duhok">دهۆک</option>
+                <option value="halabja">هەڵەبجە</option>
+                <option value="kirkuk">کەرکوک</option>
+                <option value="other">شارەکانی تری عێراق</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>شارۆچکە یان قەزا</label>
+            <input type="text" id="town" placeholder="بۆ نموونە: کەلار، سۆران، زاخۆ..." required>
+        </div>
+
+        <div class="input-group">
+            <label>گەڕەک و ناونیشانی تەواو</label>
+            <input type="text" id="neighborhood" placeholder="نموونە: بەختیاری، نزیک مزگەوت..." required>
+        </div>
+
+        <div class="input-group">
+            <label>ژمارە مۆبایل</label>
+            <input type="tel" id="phone" placeholder="0750 000 0000" required dir="ltr" style="text-align: right;">
+        </div>
+
+        <div class="input-group">
+            <label>وشەی تێپەڕ (پاسۆرد)</label>
+            <input type="password" id="password" placeholder="پاسۆردێکی بەهێز دابنێ" required minlength="6">
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">دروستکردنی هەژمار</button>
+    </form>
+    
+    <p id="errorMessage"></p>
+    
+    <div class="login-link">
+        پێشتر هەژمارت هەیە؟ <a href="login.html">چوونە ژوورەوە</a>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAaMyM_7vR7UxkouUPcCEPFvuMz9J1uTPs",
+        authDomain: "hbe-store.firebaseapp.com",
+        projectId: "hbe-store",
+        storageBucket: "hbe-store.firebasestorage.app",
+        messagingSenderId: "9693280691",
+        appId: "1:9693280691:web:46a54a03385d83423fb3c6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = "چاوەڕێ بە...";
+        errorMessage.innerText = "";
+
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const province = document.getElementById('province').value;
+        const town = document.getElementById('town').value;
+        const neighborhood = document.getElementById('neighborhood').value;
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            await setDoc(doc(db, "users", user.uid), {
+                fullName: fullName,
+                email: email,
+                province: province,
+                town: town,
+                neighborhood: neighborhood,
+                phone: phone,
+                role: "customer", // بە شێوەی سەرەتایی هەموو کەس کڕیارە
+                createdAt: new Date()
+            });
+
+            alert("هەژمارەکەت بە سەرکەوتوویی دروست کرا!");
+            window.location.href = "login.html"; 
+        } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage.innerText = "ئەم ئیمەیڵە پێشتر بەکارهاتووە.";
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage.innerText = "پاسۆردەکەت لاوازە، دەبێت لانی کەم ٦ پیت یان ژمارە بێت.";
+            } else {
+                errorMessage.innerText = "کێشەیەک ڕوویدا لە کاتی ناردندا.";
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerText = "دروستکردنی هەژمار";
+        }
+    });
+</script>
+
+</body>
+</html>

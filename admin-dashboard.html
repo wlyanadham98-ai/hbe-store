@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پەناڵی بەڕێوەبردن - HBE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; font-family: 'Tahoma', 'Noto Sans Arabic', sans-serif; }
+        body { margin: 0; background-color: #f0f2f5; padding-bottom: 50px; }
+        header { background: #003588; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-weight: bold; font-size: 1.2rem; }
+        .btn-logout { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .dashboard-container { display: none; max-width: 600px; margin: 20px auto; padding: 0 15px; }
+        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; font-size: 0.9rem; }
+        .input-group input, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
+        .btn-upload { width: 100%; background: #003588; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        #status { text-align: center; margin-top: 15px; font-weight: bold; }
+        .loading-screen { text-align: center; margin-top: 50px; font-weight: bold; color: #003588; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-title">پەناڵی HBE</div>
+    <button id="btnLogout" class="btn-logout">چوونە دەرەوە</button>
+</header>
+
+<div id="loadingScreen" class="loading-screen">چاوەڕێ بە...</div>
+
+<div class="dashboard-container" id="mainDashboard">
+    <div class="card">
+        <h3>زیادکردنی کاڵای نوێ</h3>
+        <form id="uploadForm">
+            <div class="input-group">
+                <label>ناوی کاڵا</label>
+                <input type="text" id="pName" placeholder="بۆ نموونە: شامپۆی لۆریاڵ" required>
+            </div>
+            <div class="input-group">
+                <label>نرخ</label>
+                <input type="text" id="pPrice" placeholder="بۆ نموونە: ١٢,٥٠٠ دینار" required>
+            </div>
+            <div class="input-group">
+                <label>وەسفی کاڵا</label>
+                <textarea id="pDesc" placeholder="باسی کاڵاکە بکە..." required></textarea>
+            </div>
+            <div class="input-group">
+                <label>لینکی وێنە (URL)</label>
+                <input type="url" id="pImageUrl" placeholder="لینکی وێنەکە لێرە دابنێ" required>
+                <small style="color: #666;">دەتوانیت وێنەکە لە postimages.org دابنێیت و لینکەکەی بهێنیت.</small>
+            </div>
+            <button type="submit" id="btnSubmit" class="btn-upload">بڵاوکردنەوەی کاڵا</button>
+        </form>
+        <div id="status"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAaMyM_7vR7UxkouUPcCEPFvuMz9J1uTPs",
+        authDomain: "hbe-store.firebaseapp.com",
+        projectId: "hbe-store",
+        storageBucket: "hbe-store.firebasestorage.app",
+        messagingSenderId: "9693280691",
+        appId: "1:9693280691:web:46a54a03385d83423fb3c6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('mainDashboard').style.display = 'block';
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        signOut(auth).then(() => window.location.href = "login.html");
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        btn.innerText = "لە ناردندایە...";
+
+        const name = document.getElementById('pName').value;
+        const price = document.getElementById('pPrice').value;
+        const desc = document.getElementById('pDesc').value;
+        const imageUrl = document.getElementById('pImageUrl').value;
+
+        try {
+            await addDoc(collection(db, "products"), {
+                name: name,
+                price: price,
+                description: desc,
+                imageUrl: imageUrl,
+                time: new Date()
+            });
+
+            status.style.color = "green";
+            status.innerText = "بەسەرکەوتوویی بڵاوکرایەوە!";
+            document.getElementById('uploadForm').reset();
+        } catch (err) {
+            status.style.color = "red";
+            status.innerText = "هەڵەیەک ڕوویدا لە کاتی سەیڤکردن.";
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "بڵاوکردنەوەی کاڵا";
+        }
+    });
+</script>
+
+</body>
+</html>

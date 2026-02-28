@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وردەکاری کاڵا - HBE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Tahoma', 'Noto Sans Arabic', sans-serif; box-sizing: border-box; }
+        body { margin: 0; background-color: #f6f6f6; color: #1a1a1a; padding-bottom: 80px; }
+        
+        /* هێدەری پەڕەکە لەگەڵ دوگمەی گەڕانەوە */
+        header { background: #fff; padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .back-btn { background: none; border: none; font-size: 1.5rem; color: #003588; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 5px; font-weight: bold; }
+        .header-title { flex-grow: 1; text-align: center; font-weight: bold; color: #333; font-size: 1.1rem; }
+        
+        /* وێنەی کاڵا */
+        .image-container { background: #fff; width: 100%; height: 350px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #eee; }
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        /* زانیارییەکانی کاڵا */
+        .product-info { padding: 20px; background: #fff; margin-bottom: 10px; }
+        .brand { color: #888; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .product-title { font-size: 1.4rem; margin: 0 0 10px 0; color: #111; line-height: 1.4; }
+        .product-price { font-size: 1.6rem; color: #003588; font-weight: 900; margin: 0; }
+        
+        /* وەسفی کاڵا */
+        .product-description { padding: 20px; background: #fff; line-height: 1.7; color: #444; font-size: 0.95rem; }
+        .product-description h3 { margin-top: 0; font-size: 1.1rem; color: #222; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 15px; }
+        
+        /* دوگمەی کڕین لە خوارەوە (جێگیر) */
+        .action-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: flex; gap: 10px; z-index: 100; border-top: 1px solid #eee; }
+        .btn-whatsapp { flex-grow: 1; background: #25D366; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; }
+        .btn-whatsapp:active { background: #1ebd5a; transform: scale(0.98); }
+        
+        /* شاشەی لۆدین */
+        #loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #003588; font-weight: bold; }
+        #content { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn">➔ گەڕانەوە</a>
+        <div class="header-title">وردەکاری کاڵا</div>
+        <div style="width: 24px;"></div> </header>
+
+    <div id="loading">لە هێنانیدایە...</div>
+
+    <div id="content">
+        <div class="image-container">
+            <img id="pImg" src="" alt="Product Image">
+        </div>
+
+        <div class="product-info">
+            <div class="brand">HBE European Store</div>
+            <h1 class="product-title" id="pTitle">...</h1>
+            <div class="product-price" id="pPrice">...</div>
+        </div>
+
+        <div class="product-description">
+            <h3>زانیاری زیاتر لەسەر کاڵا</h3>
+            <p id="pDesc">...</p>
+        </div>
+
+        <div class="action-bar">
+            <a href="#" id="waButton" class="btn-whatsapp" target="_blank">
+                <span style="font-size: 1.3rem;">💬</span> کڕین لە ڕێگەی وەتسئەپ
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAaMyM_7vR7UxkouUPcCEPFvuMz9J1uTPs",
+            authDomain: "hbe-store.firebaseapp.com",
+            projectId: "hbe-store",
+            storageBucket: "hbe-store.firebasestorage.app",
+            messagingSenderId: "9693280691",
+            appId: "1:9693280691:web:46a54a03385d83423fb3c6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // هێنانی ID کاڵاکە لەناو لینکەکەوە
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        async function loadProductDetails() {
+            if (!productId) {
+                document.getElementById('loading').innerText = "کاڵاکە نەدۆزرایەوە!";
+                return;
+            }
+
+            try {
+                // هێنانی زانیاری کاڵاکە لە داتابەیس
+                const docRef = doc(db, "products", productId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const product = docSnap.data();
+
+                    // پڕکردنەوەی زانیارییەکان لەسەر شاشەکە
+                    document.getElementById('pImg').src = product.imageUrl;
+                    document.getElementById('pTitle').innerText = product.name;
+                    document.getElementById('pPrice').innerText = product.price;
+                    document.getElementById('pDesc').innerText = product.description;
+
+                    // دروستکردنی نامەی وەتسئەپ (ژمارەی مۆبایلەکەت لێرە دابنێ)
+                    const phoneNumber = "9647764830004"; // ⚠️ ژمارەی خۆت لێرە بنووسە بێ سفر
+                    const message = `سڵاو، دەمەوێت ئەم کاڵایە بکڕم:%0A%0A*ناو:* ${product.name}%0A*نرخ:* ${product.price}%0A*کۆدی کاڵا:* ${productId}`;
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+                    
+                    document.getElementById('waButton').href = whatsappUrl;
+
+                    // شاردنەوەی لۆدین و نیشاندانی کاڵاکە
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+
+                } else {
+                    document.getElementById('loading').innerText = "ئەم کاڵایە بوونی نەماوە!";
+                }
+            } catch (error) {
+                console.error("Error fetching document:", error);
+                document.getElementById('loading').innerText = "کێشەیەک لە هێڵی ئینتەرنێت هەیە.";
+            }
+        }
+
+        loadProductDetails();
+    </script>
+</body>
+</html>

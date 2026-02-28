@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBE Store - هەرزان بازاڕی ئەوروپی</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ستایلە گشتییەکان */
+        * { font-family: 'Tahoma', 'Raber', 'Noto Sans Arabic', sans-serif; }
+        body { margin: 0; background-color: #f0f2f5; color: #000; padding-bottom: 70px; } 
+
+        /* هێماکانی متمانە */
+        .trust-badges { display: flex; justify-content: space-around; background: #fff; padding: 15px 10px; border-bottom: 1px solid #eee; }
+        .trust-item { text-align: center; font-size: 0.7rem; color: #000; font-weight: bold; }
+        .trust-item span { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+
+        /* Header پڕۆفیشناڵ */
+        header { 
+            background: #ffffff; 
+            padding: 15px 20px; 
+            border-bottom: 3px solid #000; /* گۆڕدرا بۆ ڕەش */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
+        .logo { font-size: 1.6rem; font-weight: 800; color: #000; letter-spacing: 1px; }
+
+        /* سێرچ بار */
+        .search-wrapper { padding: 15px; background: #fff; }
+        .search-bar { width: 100%; padding: 12px 20px; border: 1px solid #000; border-radius: 50px; background: #f8f9fa; outline: none; transition: 0.3s; box-sizing: border-box; }
+        .search-bar:focus { border-color: #444; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+
+        /* ڕیکلامی سەرەکی */
+        .hero-banner { width: 100%; height: 180px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
+        .hero-banner h2 { margin: 0; font-size: 1.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); color: #fff; }
+        .hero-banner p { background: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; margin-top: 10px; color: #fff; }
+
+        /* کارتەکانی بەرهەم */
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+        .product-card { position: relative; background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; flex-direction: column; border: 1px solid #eee; }
+        .product-card img { width: 100%; height: 150px; object-fit: contain; margin-bottom: 10px; }
+        .brand-name { font-size: 0.7rem; color: #555; font-weight: bold; text-transform: uppercase; }
+        .product-name { font-size: 0.9rem; font-weight: 600; margin: 5px 0; height: 40px; line-height: 1.4; overflow: hidden; color: #000; }
+        .price-tag { font-size: 1.1rem; font-weight: 800; color: #000; margin-bottom: 12px; }
+        
+        /* باجەکانی سەر وێنە */
+        .badge-new { position: absolute; top: 10px; right: 10px; background: #000; color: white; padding: 3px 8px; font-size: 0.6rem; border-radius: 3px; font-weight: bold; }
+
+        /* دوگمەی کڕین */
+        .btn-details { background: #000; color: white; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: bold; transition: all 0.3s ease; border: none; display: block; }
+        .btn-details:active { transform: scale(0.95); background: #333; }
+
+        /* مینیۆی خوارەوەی مۆبایل */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; border-top: 1px solid #eee; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #000; text-decoration: none; font-size: 0.7rem; font-weight: bold; }
+        .nav-item.active { color: #000; border-bottom: 2px solid #000; padding-bottom: 2px; }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 3px; font-style: normal; }
+    </style>
+</head>
+<body>
+
+    <div class="trust-badges">
+        <div class="trust-item"><span>🚚</span> گەیاندنی خێرا</div>
+        <div class="trust-item"><span>🛡️</span> کاڵای ئەسڵی</div>
+        <div class="trust-item"><span>💳</span> پارەدانی ئاسان</div>
+    </div>
+
+    <header>
+        <div class="logo">HBE Store</div>
+        <div style="display: flex; gap: 15px; color: #000; font-weight: bold;">
+            <span>🔍</span>
+            <span>🛒</span>
+            <span>👤</span>
+        </div>
+    </header>
+
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" class="search-bar" placeholder="بۆ چی دەگەڕێیت؟">
+    </div>
+
+    <div class="hero-banner">
+        <h2>داشکاندنەکانی وەرز</h2>
+        <p>تا ٥٠٪ بۆ بەرهەمە ئەڵمانییەکان</p>
+    </div>
+
+    <div style="padding: 10px; background: #fff; border-bottom: 1px solid #eee; display: flex; gap: 10px; overflow-x: auto;">
+        <button style="border: 1px solid #000; background: #000; color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;">هەمووی</button>
+        <button style="border: 1px solid #ddd; background: #fff; color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;">بۆن</button>
+        <button style="border: 1px solid #ddd; background: #fff; color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;">تەندروستی</button>
+    </div>
+
+    <div class="product-grid" id="productsGrid">
+        <div style="grid-column: span 2; text-align: center; padding: 20px; font-weight: bold; color: #000;">لە هێنانیدایە...</div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <i>🏠</i>
+            <span>سەرەکی</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i>🔍</i>
+            <span>گەڕان</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i>🛒</i>
+            <span>سەبەتە</span>
+        </a>
+        <a href="login.html" class="nav-item">
+            <i>👤</i>
+            <span>هەژمار</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAaMyM_7vR7UxkouUPcCEPFvuMz9J1uTPs",
+            authDomain: "hbe-store.firebaseapp.com",
+            projectId: "hbe-store",
+            storageBucket: "hbe-store.firebasestorage.app",
+            messagingSenderId: "9693280691",
+            appId: "1:9693280691:web:46a54a03385d83423fb3c6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadProducts() {
+            const grid = document.getElementById('productsGrid');
+            try {
+                const q = query(collection(db, "products"), orderBy("time", "desc"));
+                const snapshot = await getDocs(q);
+                
+                grid.innerHTML = ""; 
+
+                if(snapshot.empty) {
+                    grid.innerHTML = "<div style='grid-column: span 2; text-align: center; padding: 20px;'>هیچ کاڵایەک بوونی نییە.</div>";
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const product = doc.data();
+                    const card = `
+                        <div class="product-card">
+                            <div class="badge-new">نوێ ✨</div>
+                            <img src="${product.imageUrl}" alt="${product.name}">
+                            <div class="brand-name">HBE Store Official</div>
+                            <div class="product-name">${product.name}</div>
+                            <div class="price-tag">${product.price}</div>
+                            <a href="product-details.html?id=${doc.id}" class="btn-details">بینینی کاڵا</a>
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', card);
+                });
+            } catch (error) {
+                grid.innerHTML = "<div style='grid-column: span 2; text-align: center; color: red; padding: 20px;'>کێشەیەک ڕوویدا.</div>";
+            }
+        }
+
+        // لۆژیکی سێرچ (گەڕان)
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const name = card.querySelector('.product-name').innerText.toLowerCase();
+                card.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>
