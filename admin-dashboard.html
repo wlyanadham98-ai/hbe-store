@@ -13,7 +13,7 @@
         .header-title { font-weight: bold; font-size: 1.2rem; }
         .btn-logout { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        .dashboard-container { display: none; max-width: 600px; margin: 20px auto; padding: 0 15px; }
+        .dashboard-container { display: none; max-width: 800px; margin: 20px auto; padding: 0 15px; }
         .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
         h3 { border-bottom: 2px solid #000; padding-bottom: 10px; margin-top: 0; }
 
@@ -21,14 +21,17 @@
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 0.9rem; }
         .input-group input, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #000; border-radius: 8px; font-size: 1rem; outline: none; }
         
-        /* ستایلی بەشی لینکی وێنە */
         .url-wrapper { display: flex; gap: 10px; flex-direction: column; }
-        .btn-go-site { background: #333; color: white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center; font-size: 0.85rem; font-weight: bold; transition: 0.3s; }
-        .btn-go-site:hover { background: #555; }
+        .btn-go-site { background: #333; color: white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center; font-size: 0.85rem; font-weight: bold; }
 
         .btn-upload { width: 100%; background: #000; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-upload:active { transform: scale(0.98); }
         
+        /* ستایلی خشتەی کاڵاکان */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-size: 0.85rem; }
+        th { background: #f8f8f8; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+
         #status { text-align: center; margin-top: 15px; font-weight: bold; }
         .loading-screen { text-align: center; margin-top: 50px; font-weight: bold; color: #000; }
     </style>
@@ -56,30 +59,43 @@
             </div>
             <div class="input-group">
                 <label>وەسفی کاڵا</label>
-                <textarea id="pDesc" rows="3" placeholder="تایبەتمەندییەکانی کاڵاکە لێرە بنووسە..." required></textarea>
+                <textarea id="pDesc" rows="3" placeholder="تایبەتمەندییەکان..." required></textarea>
             </div>
             <div class="input-group">
                 <label>وێنەی کاڵا</label>
                 <div class="url-wrapper">
-                    <a href="https://postimages.org/" target="_blank" class="btn-go-site">
-                        🖼️ کردنەوەی سایتی بارکردنی وێنە
-                    </a>
-                    <input type="url" id="pImageUrl" placeholder="لینکی Direct Link لێرە کۆپی بکە" required>
+                    <a href="https://postimages.org/" target="_blank" class="btn-go-site">🖼️ کردنەوەی سایتی وێنە</a>
+                    <input type="url" id="pImageUrl" placeholder="Direct Link لێرە دابنێ" required>
                 </div>
-                <small style="color: #666; font-size: 0.75rem; margin-top: 5px; display: block;">
-                    دوای پۆستکردنی وێنەکە، <b>Direct Link</b> کۆپی بکە و لێرە دایبنێ.
-                </small>
             </div>
             <button type="submit" id="btnSubmit" class="btn-upload">بڵاوکردنەوەی کاڵا</button>
         </form>
         <div id="status"></div>
+    </div>
+
+    <div class="card">
+        <h3>بەڕێوەبردنی کاڵاکان (سڕینەوە)</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>وێنە</th>
+                        <th>ناو</th>
+                        <th>نرخ</th>
+                        <th>کردار</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAaMyM_7vR7UxkouUPcCEPFvuMz9J1uTPs",
@@ -94,14 +110,15 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // پشکنینی لۆگین و دەسەڵات
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists() && userDoc.data().role === 'owner') {
                 document.getElementById('loadingScreen').style.display = 'none';
                 document.getElementById('mainDashboard').style.display = 'block';
+                loadAdminProducts(); // بارکردنی لیستەکە
             } else {
-                alert("تۆ ڕێگەپێدراو نیت!");
                 window.location.href = "index.html";
             }
         } else {
@@ -109,38 +126,60 @@
         }
     });
 
-    document.getElementById('btnLogout').addEventListener('click', () => {
-        signOut(auth).then(() => window.location.href = "login.html");
-    });
+    // هێنانی کاڵاکان بۆ خشتەکە
+    async function loadAdminProducts() {
+        const tbody = document.getElementById('productsTableBody');
+        const q = query(collection(db, "products"), orderBy("time", "desc"));
+        const snapshot = await getDocs(q);
+        tbody.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const p = docSnap.data();
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><img src="${p.imageUrl}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"></td>
+                <td>${p.name}</td>
+                <td>${p.price}</td>
+                <td><button class="btn-delete" onclick="window.deleteProduct('${docSnap.id}')">سڕینەوە</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
 
+    // فەنکشنی سڕینەوە
+    window.deleteProduct = async (id) => {
+        if(confirm("دڵنیایت لە سڕینەوەی ئەم کاڵایە؟")) {
+            await deleteDoc(doc(db, "products", id));
+            loadAdminProducts();
+        }
+    }
+
+    // بڵاوکردنەوەی کاڵا
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
-        const status = document.getElementById('status');
-        
         btn.disabled = true;
         btn.innerText = "لە ناردندایە...";
 
-        const name = document.getElementById('pName').value;
-        const price = document.getElementById('pPrice').value;
-        const desc = document.getElementById('pDesc').value;
-        const imageUrl = document.getElementById('pImageUrl').value;
-
         try {
             await addDoc(collection(db, "products"), {
-                name, price, description: desc, imageUrl, time: new Date()
+                name: document.getElementById('pName').value,
+                price: document.getElementById('pPrice').value,
+                description: document.getElementById('pDesc').value,
+                imageUrl: document.getElementById('pImageUrl').value,
+                time: new Date()
             });
-            status.style.color = "green";
-            status.innerText = "بەسەرکەوتوویی بڵاوکرایەوە! ✨";
             document.getElementById('uploadForm').reset();
-        } catch (err) {
-            status.style.color = "red";
-            status.innerText = "هەڵەیەک ڕوویدا، دووبارە هەوڵ بدەرەوە.";
+            loadAdminProducts();
+            document.getElementById('status').innerText = "سەرکەوتوو بوو! ✨";
+        } catch (e) {
+            alert("هەڵەیەک ڕوویدا!");
         } finally {
             btn.disabled = false;
             btn.innerText = "بڵاوکردنەوەی کاڵا";
         }
     });
+
+    document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
 </script>
 
 </body>
