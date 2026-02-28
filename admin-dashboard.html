@@ -3,32 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پەناڵی بەڕێوەبردن - HBE</title>
+    <title>بەڕێوەبردن - HBE Store</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Tahoma', 'Noto Sans Arabic', sans-serif; }
-        body { margin: 0; background-color: #f0f2f5; padding-bottom: 50px; }
-        header { background: #003588; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        body { margin: 0; background-color: #f0f2f5; padding-bottom: 50px; color: #000; }
+        
+        header { background: #000; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
         .header-title { font-weight: bold; font-size: 1.2rem; }
         .btn-logout { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
         .dashboard-container { display: none; max-width: 600px; margin: 20px auto; padding: 0 15px; }
-        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        h3 { border-bottom: 2px solid #000; padding-bottom: 10px; margin-top: 0; }
+
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; font-size: 0.9rem; }
-        .input-group input, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
-        .btn-upload { width: 100%; background: #003588; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 0.9rem; }
+        .input-group input, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #000; border-radius: 8px; font-size: 1rem; outline: none; }
+        
+        /* ستایلی بەشی لینکی وێنە */
+        .url-wrapper { display: flex; gap: 10px; flex-direction: column; }
+        .btn-go-site { background: #333; color: white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center; font-size: 0.85rem; font-weight: bold; transition: 0.3s; }
+        .btn-go-site:hover { background: #555; }
+
+        .btn-upload { width: 100%; background: #000; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-upload:active { transform: scale(0.98); }
+        
         #status { text-align: center; margin-top: 15px; font-weight: bold; }
-        .loading-screen { text-align: center; margin-top: 50px; font-weight: bold; color: #003588; }
+        .loading-screen { text-align: center; margin-top: 50px; font-weight: bold; color: #000; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="header-title">پەناڵی HBE</div>
+    <div class="header-title">پەناڵی HBE Store</div>
     <button id="btnLogout" class="btn-logout">چوونە دەرەوە</button>
 </header>
 
-<div id="loadingScreen" class="loading-screen">چاوەڕێ بە...</div>
+<div id="loadingScreen" class="loading-screen">چاوەڕێ بە، پشکنینی دەسەڵات...</div>
 
 <div class="dashboard-container" id="mainDashboard">
     <div class="card">
@@ -36,20 +48,27 @@
         <form id="uploadForm">
             <div class="input-group">
                 <label>ناوی کاڵا</label>
-                <input type="text" id="pName" placeholder="بۆ نموونە: شامپۆی لۆریاڵ" required>
+                <input type="text" id="pName" placeholder="بۆ نموونە: شامپۆی Balea" required>
             </div>
             <div class="input-group">
                 <label>نرخ</label>
-                <input type="text" id="pPrice" placeholder="بۆ نموونە: ١٢,٥٠٠ دینار" required>
+                <input type="text" id="pPrice" placeholder="بۆ نموونە: ٨,٥٠٠ دینار" required>
             </div>
             <div class="input-group">
                 <label>وەسفی کاڵا</label>
-                <textarea id="pDesc" placeholder="باسی کاڵاکە بکە..." required></textarea>
+                <textarea id="pDesc" rows="3" placeholder="تایبەتمەندییەکانی کاڵاکە لێرە بنووسە..." required></textarea>
             </div>
             <div class="input-group">
-                <label>لینکی وێنە (URL)</label>
-                <input type="url" id="pImageUrl" placeholder="لینکی وێنەکە لێرە دابنێ" required>
-                <small style="color: #666;">دەتوانیت وێنەکە لە postimages.org دابنێیت و لینکەکەی بهێنیت.</small>
+                <label>وێنەی کاڵا</label>
+                <div class="url-wrapper">
+                    <a href="https://postimages.org/" target="_blank" class="btn-go-site">
+                        🖼️ کردنەوەی سایتی بارکردنی وێنە
+                    </a>
+                    <input type="url" id="pImageUrl" placeholder="لینکی Direct Link لێرە کۆپی بکە" required>
+                </div>
+                <small style="color: #666; font-size: 0.75rem; margin-top: 5px; display: block;">
+                    دوای پۆستکردنی وێنەکە، <b>Direct Link</b> کۆپی بکە و لێرە دایبنێ.
+                </small>
             </div>
             <button type="submit" id="btnSubmit" class="btn-upload">بڵاوکردنەوەی کاڵا</button>
         </form>
@@ -77,8 +96,14 @@
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainDashboard').style.display = 'block';
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists() && userDoc.data().role === 'owner') {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('mainDashboard').style.display = 'block';
+            } else {
+                alert("تۆ ڕێگەپێدراو نیت!");
+                window.location.href = "index.html";
+            }
         } else {
             window.location.href = "login.html";
         }
@@ -103,19 +128,14 @@
 
         try {
             await addDoc(collection(db, "products"), {
-                name: name,
-                price: price,
-                description: desc,
-                imageUrl: imageUrl,
-                time: new Date()
+                name, price, description: desc, imageUrl, time: new Date()
             });
-
             status.style.color = "green";
-            status.innerText = "بەسەرکەوتوویی بڵاوکرایەوە!";
+            status.innerText = "بەسەرکەوتوویی بڵاوکرایەوە! ✨";
             document.getElementById('uploadForm').reset();
         } catch (err) {
             status.style.color = "red";
-            status.innerText = "هەڵەیەک ڕوویدا لە کاتی سەیڤکردن.";
+            status.innerText = "هەڵەیەک ڕوویدا، دووبارە هەوڵ بدەرەوە.";
         } finally {
             btn.disabled = false;
             btn.innerText = "بڵاوکردنەوەی کاڵا";
